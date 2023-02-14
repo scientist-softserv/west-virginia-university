@@ -33,7 +33,9 @@ gem 'whenever', require: false
 
 # Bulkrax Import
 # =====================================================
+# Switch the comments on these two lines to work on Bulkrax locally
 gem 'bulkrax'
+# gem 'bulkrax', path: 'vendor/engines/bulkrax'
 gem 'simple_form'
 
 # background jobs
