@@ -51,10 +51,10 @@ module Bulkrax
     end
 
     def create
-      attrs = transform_attributes
-      # @object = klass.new
-      # create_work(attrs)
-      # log_created(object)
+      @object = klass.new(transform_attributes)
+
+      object.save!
+      log_created(object)
     end
 
     # TODO: implement
@@ -130,6 +130,11 @@ module Bulkrax
         end
       end
       dupe
+    end
+
+    def log_created(obj)
+      msg = "Created #{obj.class} #{obj.id}"
+      Rails.logger.info("#{msg} (#{Array(attributes[work_identifier]).first})")
     end
   end
 end
