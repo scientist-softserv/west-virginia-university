@@ -85,6 +85,9 @@ module Bulkrax
       # TODO: implement with files or remove
       # @transform_attributes.merge!(file_attributes(update_files)) if with_files
       @transform_attributes = remove_blank_hash_values(@transform_attributes) if transformation_removes_blank_hash_values?
+      # TODO: Should we filter these out earlier in the process? I.e. before they get into :attributes or when we're
+      #       parsing the metadata? I don't think we currently know enough about what :attributes will look like
+      #       at this point to say for sure yet.
       exceptions = update ? [:id] + file_path_field_names : file_path_field_names
 
       @transform_attributes.except(exceptions)
