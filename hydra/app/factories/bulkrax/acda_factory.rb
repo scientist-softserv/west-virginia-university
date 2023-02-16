@@ -85,12 +85,32 @@ module Bulkrax
       # TODO: implement with files or remove
       # @transform_attributes.merge!(file_attributes(update_files)) if with_files
       @transform_attributes = remove_blank_hash_values(@transform_attributes) if transformation_removes_blank_hash_values?
-      update ? @transform_attributes.except(:id) : @transform_attributes
+      exceptions = update ? [:id] + file_path_field_names : file_path_field_names
+
+      @transform_attributes.except(exceptions)
     end
 
     # Regardless of what the Parser gives us, these are the properties we are prepared to accept.
     def permitted_attributes
       klass.properties.keys.map(&:to_sym) + base_permitted_attributes
+    end
+
+    # When creating an Acda record, these all get filtered out of the metadata.
+    # @see ImportLibrary#create_new_record
+    #
+    # @return [Array<Symbol>] List of all ingestable <file>_path field names
+    def file_path_field_names
+      %i[
+        audio_path
+        image_path
+        pdf_path
+        thumb_path
+        video_path
+        pdf_image_path
+        pdf_thumb_path
+        video_image_path
+        video_thumb_path
+      ]
     end
 
     # Return a copy of the given attributes, such that all values that are empty or an array of all
