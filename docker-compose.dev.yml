@@ -47,8 +47,6 @@ services:
         condition: service_started
       solr:
         condition: service_started
-      workers:
-        condition: service_started
     stdin_open: true
     tty: true
 
