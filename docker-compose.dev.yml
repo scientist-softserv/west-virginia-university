@@ -16,16 +16,6 @@ services:
     networks:
       - hydra
 
-  migrate:
-    extends: app
-    container_name: migrate
-    command: bash -c "bundle install; bundle exec rails db:migrate"
-    depends_on:
-      - redis
-      - solr
-      - fcrepo
-      - db
-
   web:
     extends: app
     container_name: acda_portal
@@ -43,8 +33,6 @@ services:
         condition: service_started
       workers:
         condition: service_started
-      migrate:
-        condition: service_completed_successfully
 
   workers:
     extends: app
@@ -59,8 +47,8 @@ services:
         condition: service_started
       solr:
         condition: service_started
-      migrate:
-        condition: service_completed_successfully
+      workers:
+        condition: service_started
     stdin_open: true
     tty: true
 
