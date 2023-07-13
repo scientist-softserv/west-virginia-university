@@ -3,3 +3,7 @@
 /data/*
 /env/
 /env*
+tmp
+
+# ignore local version of bulkrax
+hydra/vendor/engines
