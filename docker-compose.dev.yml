@@ -35,8 +35,6 @@ services:
         condition: service_started
       workers:
         condition: service_started
-      migrate:
-        condition: service_completed_successfully
 
   workers:
     extends: app
@@ -51,10 +49,6 @@ services:
         condition: service_started
       solr:
         condition: service_started
-      workers:
-        condition: service_started
-      migrate:
-        condition: service_completed_successfully
     stdin_open: true
     tty: true
 
