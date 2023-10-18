@@ -21,11 +21,16 @@ The SoftServ `main` has changes necessary for building your local docker instanc
 
 You need to start branches from `softserv-dev` and submit PRs to SoftServ's Github repository; the SoftServ team will review the changes and we then merge those changes into SoftServ's `softserv-dev` branch.
 
+ **_Note_**: There is no automated deploy for SoftServ; nor do we have a staging environment.  SoftServ QA is handled on a local instance; and WVU QA is handled by them spinning up a staging environment.
+
 At this point, we do local QA against SoftServ's `softserv-dev` branch.  When it passes internal QA, we can move the ticket. 
 
-We then need to send that code to WVU for review.  We also will submit PRs from SoftServ's `softserv-dev` branch to WVU's `softserv-dev` branch.  When we submit those, ping the developers at WVU to have them review and ultimately spin up a staging environment.
+We then need to send that code to WVU for review.  We also will submit PRs from SoftServ's `softserv-dev` branch to WVU's `softserv-dev` branch.  When we submit those PRs:
 
-We may need to bring changes for WVU's `softserv-dev` branch into SoftServ's branch.  If that is the case, we'll determine the best approach.  Likewise for changes added to `main`; though those are unliekly.
+- Check the commits to review what will be sent to WVU
+- Ping the developers at WVU to have them review and ultimately spin up a staging environment. 
+
+I suspect that the flow of changes will be uni-directional; code will likely only be going into WVU `softserv-dev`.  If that suspicision is not the case, we'll determine the best approach to bring changes for WVU's `softserv-dev` branch into SoftServ's branch.  Likewise for changes added to `main`; though I suspect those are unlikely.
 
 ## Procedure: Adding Changes to SoftServ's main and softserv-dev branches
 
