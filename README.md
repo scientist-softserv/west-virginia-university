@@ -1,5 +1,7 @@
 # WVU Hydra Repo (Hydra 11)
 
+First read [Development.md](./DEVELOPMENT.md) for SoftServ specific instructions.
+
 This repo was created with the intention of being our main hydra head for while.  The goal is to implement hydra 11 in a docker container while also scripting in things to generate our new hydra heads every time we have to make a new "head" or repository.  
 
 ## Contents
