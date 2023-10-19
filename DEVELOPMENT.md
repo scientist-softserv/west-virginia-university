@@ -30,7 +30,7 @@ We then need to send that code to WVU for review.  We also will submit PRs from 
 - Check the commits to review what will be sent to WVU
 - Ping the developers at WVU to have them review and ultimately spin up a staging environment. 
 
-I suspect that the flow of changes will be uni-directional; code will likely only be going into WVU `softserv-dev`.  If that suspicision is not the case, we'll determine the best approach to bring changes for WVU's `softserv-dev` branch into SoftServ's branch.  Likewise for changes added to `main`; though I suspect those are unlikely.
+I suspect that the flow of changes will be uni-directional; code will likely only be going into WVU `softserv-dev`.  If that suspicion is not the case, we'll determine the best approach to bring changes for WVU's `softserv-dev` branch into SoftServ's branch.  Likewise for changes added to `main`; though I suspect those are unlikely.
 
 ## Procedure: Adding Changes to SoftServ's main and softserv-dev branches
 
