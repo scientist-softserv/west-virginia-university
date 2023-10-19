@@ -51,7 +51,8 @@ The goal of the above is three-fold:
 
 Note, there are cases where we will first add documentation to `main` and then propogage that to `softserv-dev`.
 
-# Local Development
+## Local Development
+
 
 The `up.sh` command uses the `docker-compose.dev.yml` file for it’s build process.  This will both build and bring up the containers.  You can access the application at http://localhost:3000.  When I first accessed the application, I had to shell into the `web` container and run `bundle exec rake db:create db:migrate`.  To shell into the `web` container use the following: `docker compose -f docker-compose.dev.yml exec web bash`.
 
@@ -62,3 +63,14 @@ docker compose -f docker-compose.dev.yml -f docker-compose.dev.debug.yml up
 ```
 
 You'll then need to shell into the containers to start the services.
+
+### Adding Content
+
+To get data into the app:
+
+- Navigate to http://localhost:3000/importers?locale-en to import via bulkrax csv
+- Sample csv files are on the roundtripping ticket:
+  - https://github.com/scientist-softserv/west-virginia-university/issues/104
+- You will have to log into the popup.  The username is in `ENV['BULKRAX_USERNAME']` and the password is in `ENV['BULKRAX_PW']`.  For local development, see [./env/env.dev.hydra](./env/env.dev.hydra).    
+  - Barring that, shell into the web container (e.g. `docker compose -f docker-compose.dev.yml exec web bash`) and run `echo "$BULKRAX_USERNAME:$BULKRAX_PW"`.
+
