@@ -1,110 +1,31 @@
-class GeneratePdfThumbsJob < ApplicationJob
-  include ImportLibrary
-
-  queue_as :import
+class GeneratePdfThumbsJob < GenerateThumbsJob
+  PDF_PATH = "/home/hydra/tmp/pdf"
 
   def perform(identifier)
-    # find record
-    record = Acda.where(identifier: identifier).first
-
-    # temp folder to store pdf files
-    pdf_path = "/home/hydra/tmp/pdf"
-
-    # make folder if it doesn't exist
-    FileUtils.mkdir_p(pdf_path) unless File.exist?(pdf_path)
-
-    # add identifier and extension to pdf path so we have
-    # full path and file name to pdf file.
-    pdf_path = "#{pdf_path}/#{identifier}.pdf"
-
-    begin
-      # download image file from preview url
-      pdf_file = URI.open(record.preview)
-    rescue Errno::ENOENT => e
-      Rails.logger.error "Error: edm:preview for #{identifier} is not a valid pdf url. #{e.message}"
-      return record.thumbnail_file = nil
-    end
-
-    tempfile = File.new(pdf_path, "w+")
-    IO.copy_stream(pdf_file, pdf_path)
-    tempfile.close
-
-    # check if the tempfile is indeed a pdf
-    mime_type = `file --brief --mime-type #{Shellwords.escape(pdf_path)}`.strip
-
-    # sets thumbnail_file to nil if mime_type is not a pdf so, we don't retain the previous thumbnail
-    return record.thumbnail_file = nil unless mime_type.include?('pdf')
-
-    record.files.build unless record.files.present?
-
-    # set image path
-    image_path = "/home/hydra/tmp/images"
-
-    # create folder if it doesn't exist
-    FileUtils.mkdir_p(image_path) unless File.exist?(image_path)
-
-    MiniMagick::Tool::Convert.new do |convert|
-      # prep format
-      convert.format 'jpg'
-      convert.background "white"
-      # convert.flatten
-      convert.density 300
-      convert.quality 100
-      # add page to be converted
-      convert << tempfile.path
-      # add path of page to be converted
-      convert << "#{image_path}/#{identifier}.jpg"
-    end
-
-    # check and see if image exists
-    if File.exist?("#{image_path}/#{identifier}.jpg")
-      # set image file
-      image_path = "#{image_path}/#{identifier}.jpg"
-    elsif File.exist?("#{image_path}/#{identifier}-0.jpg")
-      # set image file
-      image_path = "#{image_path}/#{identifier}-0.jpg"
-    end
-
-    ImportLibrary.set_file(record.build_image_file, 'application/jpg', image_path)
-
-    # set thumbnail path
-    thumbnail_path = "/home/hydra/tmp/thumbnails"
-
-    # create folder if it doesn't exist
-    FileUtils.mkdir_p(thumbnail_path) unless File.exist?(thumbnail_path)
-
-    MiniMagick::Tool::Convert.new do |convert|
-      # prep format
-      convert.thumbnail '150x150'
-      convert.format 'jpg'
-      convert.background "white"
-      # convert.flatten
-      convert.density 300
-      convert.quality 100
-      # add page to be converted
-      convert << image_path
-      # add path of page to be converted
-      convert << "#{thumbnail_path}/#{identifier}.jpg"
-    end
-
-    ImportLibrary.set_file(record.build_thumbnail_file, 'application/jpg', "#{thumbnail_path}/#{identifier}.jpg")
-    record.save!
-
-    # delete temp files
-    # tempfile.unlink
-
-    # delete downloaded pdf file
-    File.delete(pdf_path) if File.exist?(pdf_path)
-
-    # delete all images with identifier
-    Dir.glob("#{image_path}/#{identifier}*").each do |file|
-      File.delete(file)
-    end
-
-    # delete thumbnails with identifier
-    Dir.glob("#{thumbnail_path}/#{identifier}*").each do |file|
-      File.delete(file)
-    end
+    find_record(identifier)
+    pdf_file_path = File.join(PDF_PATH, "#{identifier}.pdf")
+    process_file(pdf_file_path) { convert_pdf_to_image(pdf_file_path) }
   end
 
+  private
+
+    def tmp_paths
+      super + [PDF_PATH]
+    end
+
+    def convert_pdf_to_image(pdf_file_path)
+      return log_error(record, "The file is not a valid PDF.") unless valid_format?(pdf_file_path, 'pdf')
+
+      image_file_path = File.join(IMAGE_PATH, "#{record.identifier}.jpg")
+      MiniMagick::Tool::Convert.new do |convert|
+        convert.format 'jpg'
+        convert.background 'white'
+        convert.density 300
+        convert.quality 100
+        # Add page selection to convert the first page of the PDF if it's multi-page
+        convert << "#{pdf_file_path}[0]"
+        convert << image_file_path
+      end
+      image_file_path
+    end
 end
